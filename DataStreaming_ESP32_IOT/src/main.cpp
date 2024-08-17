@@ -7,13 +7,13 @@
 #define LEDPIN 2
 
 /* WIFI */
-#define WIFI_NETWORK "MA"
-#define WIFI_PASSWORD "Mamama2021"
+#define WIFI_NETWORK "XXXXXXXXX"
+#define WIFI_PASSWORD "ZZZZZZZZ"
 #define WIFI_TIMEOUT_MS 20000
 
 /* ThingSpeak */
 #define CHANNEL_ID 2627918
-#define CHANNEL_WRITE_API_KEY "4NEXJOHINUEQNLVN"
+#define CHANNEL_WRITE_API_KEY "S2I1QL7ITRPWGU6W"
 #define CHANNEL_READ_API_KEY "XJMEC8DGO0LW7LMO"
 
 /*GLOBAL DATA*/
@@ -39,15 +39,16 @@ void keepWiFiAlive(void* parameters)
     {
       Serial.println("WiFi Still Connected");
       vTaskDelay(30000 / portTICK_PERIOD_MS);
+      continue;
+    }
 
-    }else
-    {
+
       Serial.println("Connecting to WiFi");
       WiFi.mode(WIFI_STA);  //WiFi mode WIFI_STA station mode
       WiFi.begin(WIFI_NETWORK, WIFI_PASSWORD);
 
-      startAttemptTime = millis();
 
+      startAttemptTime = millis();
       //Keep looping while the wifi not connected and hasn't reached the timeout 
       while((WiFi.status() != WL_CONNECTED) && (millis() - startAttemptTime < WIFI_TIMEOUT_MS))
       {
@@ -55,19 +56,20 @@ void keepWiFiAlive(void* parameters)
         delay(100);
       }
 
+
       // In case if couldn't make a wifi connection
       if(WiFi.status() != WL_CONNECTED)
       {
         Serial.println("Failed To Connect!");
         //Wait for 20s before trying again
         vTaskDelay(20000 / portTICK_PERIOD_MS);
-      }else{
-        Serial.println(" Connected Successfully! IP = " + WiFi.localIP());
+        continue;
+      }
 
+
+        Serial.println(" Connected Successfully! IP = " + WiFi.localIP());
         // Resume other tasks after WiFi is connected
         vTaskResume(functionTaskHandle);
-      }
-    }
   }
 }
 
@@ -111,7 +113,7 @@ void setup() {
     "The Function Task",
     5000,
     NULL,
-    2,
+    1,
     &functionTaskHandle
   );
 
